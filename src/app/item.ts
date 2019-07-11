@@ -1,0 +1,36 @@
+export class Item{
+  public id : string;
+  public name : string;
+  public description : string;
+  public f1 :string;
+  public f1Val :string;
+  public f2 :string;
+  public f2Val :string;
+  public f3 :string;
+  public f3Val :string;
+  public f4 :string;
+  public f4Val :string;
+  public f5 :string;
+  public f5Val :string;
+  public f6 :string;
+  public f6Val :string;
+  public f7 :string;
+  public f7Val :string;
+  public f8 :string;
+  public f8Val :string;
+   public f9 :string;
+  public f9Val :string;
+  public f10 :string;
+  public f10Val :string;
+   public f11 :string;
+  public f11Val :string;
+  public f12 :string;
+  public f12Val :string;
+  public f13 :string;
+  public f13Val :string;
+   public f14 :string;
+  public f14Val :string;
+  public f15 :string;
+  public f15Val :string;
+  public paramCount :number;
+}
