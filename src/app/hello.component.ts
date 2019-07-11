@@ -68,6 +68,7 @@ export class HelloComponent implements OnInit {
   }
   addNewItem() {
     this.configsession=true;
+    this.pricesession=false;
     this.addnewval = true;
     this.selItem = new Item();
     this.selItem.paramCount = 1;

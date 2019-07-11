@@ -2,30 +2,18 @@
 	<a class="navbar-brand" href="#"><img src="https://www.citizensbank.com/assets/CB_resources/images/logo_footer_Citizensbank.svg" alt="Logo" style="width:150px;height:25px;">Pricing Tool</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
-  </button>
+  </button> 
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#" (click)="home()">Home <span class="sr-only">(current)</span></a>
+      <li class="nav-item active pr-2">
+        <a class="nav-link" href="#" (click)="home()"><i class="fa fa-home pr-1"></i>Home <span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#" (click)="addNewItem()">Add Item</a>
+      <li class="nav-item pr-2">
+        <a class="nav-link" href="#" (click)="addNewItem()"><i class="fa fa-plus pr-1"></i> AddItem</a>
       </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dropdown
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-      </li>
+     
+     
     </ul>
     <form class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
@@ -35,22 +23,17 @@
 </nav>
 
 <div class="container">
- <fa name="cog" animation="spin"></fa>
-<br><br>
-<div class="row">
-<h4 *ngIf="selItemList">Item List</h4>
-<h5 *ngIf="addnewval && configsession" >Name :</h5> <input  class="form-control" *ngIf="addnewval && configsession"  [(ngModel)]="selItem.name" tye="text" />
- <h5 *ngIf="addnewval && configsession" >Description :</h5> <input  class="form-control" *ngIf="addnewval && configsession"  [(ngModel)]="selItem.description" tye="text" />
-</div><br>
+ 
+<br>
 <div class="row py-4" *ngIf="!(addnewval && configsession)" >
   <div class="col-sm-4 py-2" *ngFor="let itm of selItemList"> 
     <div class="card border border-warning" > 
       <div class="card-body bg-light">
         <h5 class="card-title">{{itm.name}}</h5>
         <p class="card-text"><i>{{itm.description}}</i></p>
-        <a href="#" class="btn btn-primary" (click)=ChangingValue(itm.id)>Configure</a>
+        <a href="#" class="btn btn-primary" (click)=ChangingValue(itm.id)><i class="fa fa-cog pr-2"></i>Configure</a>
         &nbsp;&nbsp;
-        <a href="#" class="btn btn-primary" (click)=loadPriceList(itm.id)>Price Setting</a>
+        <a href="#" class="btn btn-primary" (click)=loadPriceList(itm.id)><i class="fa fa-tags pr-2"></i>Price Setting</a>
       </div>
     </div>
   </div>
@@ -65,11 +48,15 @@
     </option> 
   </select><br><br>-->
   <div *ngIf="configsession" > 
-    <br><br>
-  <h4>Item Configuration - {{selItem.name}}</h4><br>
-  <button (click)="addParam()" class="btn btn-outline-primary " type="button"  *ngIf="selItem && selItem.paramCount > 0" >Add Param</button> &nbsp;
+   
   
-  <button (click)="saveItem()" class="btn btn-outline-primary " type="button"  *ngIf="selItem && selItem.paramCount > 0" >Save Item</button><br> <br>
+  <h4><i class="fa fa-cog pr-2"></i>Item Configuration - {{selItem.name}}</h4><br>
+  <button (click)="addParam()" class="btn btn-outline-primary " type="button"  *ngIf="selItem && selItem.paramCount > 0" ><i class="fa fa-plus pr-2"></i>Add Param</button> &nbsp;
+  
+  <button (click)="saveItem()" class="btn btn-outline-primary " type="button"  *ngIf="selItem && selItem.paramCount > 0" ><i class="fa fa-save pr-2"></i>Save Item</button><br> <br>
+  <h5>Name :</h5> <input  class="form-control"   [(ngModel)]="selItem.name" tye="text" />
+  <h5>Description :</h5> <input  class="form-control" [(ngModel)]="selItem.description" tye="text" />
+    <br><br>
   <table class="table table-striped border border-success">
     
       <tr  *ngIf="selItem && selItem.paramCount > 0" class="bg-success">
@@ -107,16 +94,63 @@
         <td>Field6 </td>
         <td> <input  class="form-control" [(ngModel)]="selItem.f6" type="text" /></td>
         <td><input  class="form-control" *ngIf="selItem"  [(ngModel)]="selItem.f6Val" tye="text" /></td>
-      </tr>    
+      </tr>
+      <tr *ngIf="selItem && selItem.paramCount > 6" > 
+        <td>Field7 </td>
+        <td> <input  class="form-control" [(ngModel)]="selItem.f7" type="text" /></td>
+        <td><input  class="form-control" *ngIf="selItem"  [(ngModel)]="selItem.f7Val" tye="text" /></td>
+      </tr> 
+      <tr *ngIf="selItem && selItem.paramCount > 7" > 
+        <td>Field8 </td>
+        <td> <input  class="form-control" [(ngModel)]="selItem.f8" type="text" /></td>
+        <td><input  class="form-control" *ngIf="selItem"  [(ngModel)]="selItem.f8Val" tye="text" /></td>
+      </tr> 
+      <tr *ngIf="selItem && selItem.paramCount > 8" > 
+        <td>Field9 </td>
+        <td> <input  class="form-control" [(ngModel)]="selItem.f9" type="text" /></td>
+        <td><input  class="form-control" *ngIf="selItem"  [(ngModel)]="selItem.f9Val" tye="text" /></td>
+      </tr>
+      <tr *ngIf="selItem && selItem.paramCount > 9" > 
+        <td>Field10 </td>
+        <td> <input  class="form-control" [(ngModel)]="selItem.f10" type="text" /></td>
+        <td><input  class="form-control" *ngIf="selItem"  [(ngModel)]="selItem.f10Val" tye="text" /></td>
+      </tr> 
+      <tr *ngIf="selItem && selItem.paramCount > 10" > 
+        <td>Field11 </td>
+        <td> <input  class="form-control" [(ngModel)]="selItem.f11" type="text" /></td>
+        <td><input  class="form-control" *ngIf="selItem"  [(ngModel)]="selItem.f11Val" tye="text" /></td>
+      </tr>
+      <tr *ngIf="selItem && selItem.paramCount > 11" > 
+        <td>Field12 </td>
+        <td> <input  class="form-control" [(ngModel)]="selItem.f12" type="text" /></td>
+        <td><input  class="form-control" *ngIf="selItem"  [(ngModel)]="selItem.f12Val" tye="text" /></td>
+      </tr> 
+      <tr *ngIf="selItem && selItem.paramCount > 12" > 
+        <td>Field13 </td>
+        <td> <input  class="form-control" [(ngModel)]="selItem.f13" type="text" /></td>
+        <td><input  class="form-control" *ngIf="selItem"  [(ngModel)]="selItem.f13Val" tye="text" /></td>
+      </tr>
+      <tr *ngIf="selItem && selItem.paramCount > 13" > 
+        <td>Field14 </td>
+        <td> <input  class="form-control" [(ngModel)]="selItem.f14" type="text" /></td>
+        <td><input  class="form-control" *ngIf="selItem"  [(ngModel)]="selItem.f14Val" tye="text" /></td>
+      </tr> 
+      <tr *ngIf="selItem && selItem.paramCount > 14" >
+        <td>Field15 </td>
+        <td> <input  class="form-control" [(ngModel)]="selItem.f15" type="text" /></td>
+        <td><input  class="form-control" *ngIf="selItem"  [(ngModel)]="selItem.f15Val" tye="text" /></td>
+      </tr>        
   </table>
 </div>
 <div *ngIf="pricesession">
   <br><br>
-  <h4>Price Settings -  {{selItem.name}}</h4>
+  <h4><i class="fa fa-tags pr-2"></i> Price Settings -  {{selItem.name}}</h4>
   <br>
-  <button (click)="addPriceItem()" class="btn btn-outline-primary " type="button"  *ngIf="selItem " >Add New ItemPrice </button>&nbsp;
-  <button (click)="savePriceItem()" class="btn btn-outline-primary " type="button"  *ngIf="selItem " >Save ItemPrice </button>
-  <br><br>
+  <button (click)="addPriceItem()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-plus pr-2"></i>Add New ItemPrice </button>
+  <button (click)="savePriceItem()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-save pr-2"></i>Save ItemPrice </button>
+   <button (click)="savePriceItem()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-upload pr-2"></i>Upload PriceList </button>
+  
+  <div class="inner">
 <table class="table table-striped border border-success" >
     
       <tr class="bg-success">
@@ -126,6 +160,15 @@
         <th *ngIf="selItem && selItem.paramCount > 3">{{selItem.f4}}</th>
         <th *ngIf="selItem && selItem.paramCount > 4">{{selItem.f5}}</th>
         <th *ngIf="selItem && selItem.paramCount > 5">{{selItem.f6}}</th>
+        <th *ngIf="selItem && selItem.paramCount > 6">{{selItem.f7}}</th>
+        <th *ngIf="selItem && selItem.paramCount > 7">{{selItem.f8}}</th>
+        <th *ngIf="selItem && selItem.paramCount > 8">{{selItem.f9}}</th>
+        <th *ngIf="selItem && selItem.paramCount > 9">{{selItem.f10}}</th>
+        <th *ngIf="selItem && selItem.paramCount > 10">{{selItem.f11}}</th>
+        <th *ngIf="selItem && selItem.paramCount > 11">{{selItem.f12}}</th>
+        <th *ngIf="selItem && selItem.paramCount > 12">{{selItem.f13}}</th>
+        <th *ngIf="selItem && selItem.paramCount > 13">{{selItem.f14}}</th>
+        <th *ngIf="selItem && selItem.paramCount > 14">{{selItem.f15}}</th>
         <th *ngIf="selItem && selItem.paramCount > 0">BasePoint</th>
       </tr> 
       <tr *ngFor="let itemPr of selItemPriceList">
@@ -165,6 +208,62 @@
               <option *ngFor="let it of getUserList2(selItem.f6Val)" >{{it}}</option>
             </select>
         </td>
+        <td *ngIf="selItem && selItem.paramCount > 6">         
+            <input  class="form-control" *ngIf="!selItem.f7Val"  [(ngModel)]="itemPr.val7" type="text" />
+            <select class="form-control"   *ngIf="selItem.f7Val" [(ngModel)]="itemPr.val7"> 
+              <option *ngFor="let it of getUserList2(selItem.f7Val)" >{{it}}</option>
+            </select>
+        </td>
+        <td *ngIf="selItem && selItem.paramCount > 7">         
+            <input  class="form-control" *ngIf="!selItem.f8Val"  [(ngModel)]="itemPr.val8" type="text" />
+            <select class="form-control"   *ngIf="selItem.f8Val" [(ngModel)]="itemPr.val8"> 
+              <option *ngFor="let it of getUserList2(selItem.f8Val)" >{{it}}</option>
+            </select>
+        </td>
+        <td *ngIf="selItem && selItem.paramCount > 8">         
+            <input  class="form-control" *ngIf="!selItem.f9Val"  [(ngModel)]="itemPr.val9" type="text" />
+            <select class="form-control"   *ngIf="selItem.f9Val" [(ngModel)]="itemPr.val9"> 
+              <option *ngFor="let it of getUserList2(selItem.f9Val)" >{{it}}</option>
+            </select>
+        </td>
+        <td *ngIf="selItem && selItem.paramCount > 9">         
+            <input  class="form-control" *ngIf="!selItem.f10Val"  [(ngModel)]="itemPr.val10" type="text" />
+            <select class="form-control"   *ngIf="selItem.f10Val" [(ngModel)]="itemPr.val10"> 
+              <option *ngFor="let it of getUserList2(selItem.f10Val)" >{{it}}</option>
+            </select>
+        </td>
+        <td *ngIf="selItem && selItem.paramCount > 10">         
+            <input  class="form-control" *ngIf="!selItem.f11Val"  [(ngModel)]="itemPr.val11" type="text" />
+            <select class="form-control"   *ngIf="selItem.f11Val" [(ngModel)]="itemPr.val11"> 
+              <option *ngFor="let it of getUserList2(selItem.f11Val)" >{{it}}</option>
+            </select>
+        </td>
+        <td *ngIf="selItem && selItem.paramCount > 11">         
+            <input  class="form-control" *ngIf="!selItem.f12Val"  [(ngModel)]="itemPr.val12" type="text" />
+            <select class="form-control"   *ngIf="selItem.f12Val" [(ngModel)]="itemPr.val12"> 
+              <option *ngFor="let it of getUserList2(selItem.f12Val)" >{{it}}</option>
+            </select>
+        </td>
+        <td *ngIf="selItem && selItem.paramCount > 12">         
+            <input  class="form-control" *ngIf="!selItem.f13Val"  [(ngModel)]="itemPr.val13" type="text" />
+            <select class="form-control"   *ngIf="selItem.f13Val" [(ngModel)]="itemPr.val13"> 
+              <option *ngFor="let it of getUserList2(selItem.f13Val)" >{{it}}</option>
+            </select>
+        </td>
+        <td *ngIf="selItem && selItem.paramCount > 13">         
+            <input  class="form-control" *ngIf="!selItem.f14Val"  [(ngModel)]="itemPr.val14" type="text" />
+            <select class="form-control"   *ngIf="selItem.f14Val" [(ngModel)]="itemPr.val14"> 
+              <option *ngFor="let it of getUserList2(selItem.f14Val)" >{{it}}</option>
+            </select>
+        </td>
+        <td *ngIf="selItem && selItem.paramCount > 14">         
+            <input  class="form-control" *ngIf="!selItem.f15Val"  [(ngModel)]="itemPr.val15" type="text" />
+            <select class="form-control"   *ngIf="selItem.f15Val" [(ngModel)]="itemPr.val15"> 
+              <option *ngFor="let it of getUserList2(selItem.f15Val)" >{{it}}</option>
+            </select>
+        </td>
+
+
         <td *ngIf="selItem && selItem.paramCount > 0">         
             <input  class="form-control"  [(ngModel)]="itemPr.basePoint" type="text" />
            
@@ -172,6 +271,6 @@
       </tr>
       
       
-</table>
+</table></div>
 </div>
 </div>

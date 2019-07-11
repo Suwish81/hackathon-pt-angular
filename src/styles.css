@@ -1,1 +1,25 @@
 /* Add application styles & imports to this file! */
+
+.scrolling table {
+    table-layout: inherit;
+ *margin-left: -100px;/*ie7*/
+}
+.scrolling td, th {
+    vertical-align: top;
+	padding: 10px;
+	min-width: 100px;
+}
+.scrolling th {
+	position: absolute;
+ *position: relative; /*ie7*/
+	left: 0;
+	width: 120px;
+}
+.outer {
+	position: relative
+}
+.inner {
+	overflow-x: auto;
+	overflow-y: visible;
+
+}
