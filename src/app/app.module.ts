@@ -6,9 +6,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { HelloComponent } from './hello.component';
 import { ExcelService } from './excel.service';
+import { SimpleNotificationsModule } from 'angular2-notifications';
 
 @NgModule({
-  imports:      [ BrowserModule, FormsModule,HttpClientModule ],
+  imports:      [ BrowserModule, FormsModule,HttpClientModule, SimpleNotificationsModule.forRoot() ],
   declarations: [ AppComponent, HelloComponent ],
   bootstrap:    [ AppComponent ],
    providers: [ExcelService]

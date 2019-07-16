@@ -6,6 +6,7 @@ import { Item } from './item';
 import { ItemPrice } from './itemPrice';
 import {ExcelService} from './excel.service';
 import * as XLSX from 'xlsx';
+import { NotificationsService,NotificationType } from 'angular2-notifications';
 
 @Component({
   selector: 'hello',
@@ -30,7 +31,7 @@ export class HelloComponent implements OnInit {
   
     //this.getItemPriceList();
   }
-  constructor(private http: HttpClient,private excelService:ExcelService) {
+  constructor(private http: HttpClient, private _notifications: NotificationsService,private excelService:ExcelService) {
     this.home();
   }
 
@@ -100,7 +101,7 @@ export class HelloComponent implements OnInit {
   }
   addParam() {
     this.selItem.paramCount++;
-  }
+  } 
   addNewItem() {
     this.configsession=true;
     this.pricesession=false;
@@ -113,7 +114,9 @@ export class HelloComponent implements OnInit {
       this.getItem();
       this.configsession=false;
       this.addnewval = false;
+      this.notification("Data saved sucessfully");
     });
+    
 
   }
 
@@ -158,8 +161,19 @@ export class HelloComponent implements OnInit {
   savePriceItem() {
     this.http.post(this.baseUrl + '/itemprice', this.selItemPriceList).subscribe((res) => {
       this.getItemPriceList();
+      this.notification("Data saved sucessfully");
 
     });
+  }
+
+  notification (message :string){
+    this._notifications.create('Message', "Data saved sucessfully",NotificationType.Success, {		
+			timeOut: 5000,
+			showProgressBar: true,
+			pauseOnHover: true,
+			clickToClose: true,
+			animate: 'fromRight'
+		});
   }
 
 }
