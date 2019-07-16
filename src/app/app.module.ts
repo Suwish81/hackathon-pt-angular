@@ -9,9 +9,9 @@ import { ExcelService } from './excel.service';
 import { SimpleNotificationsModule } from 'angular2-notifications';
 
 @NgModule({
-  imports:      [ BrowserModule, FormsModule,HttpClientModule, SimpleNotificationsModule.forRoot() ],
-  declarations: [ AppComponent, HelloComponent ],
-  bootstrap:    [ AppComponent ],
-   providers: [ExcelService]
+  imports: [BrowserModule, FormsModule, HttpClientModule, SimpleNotificationsModule.forRoot()],
+  declarations: [AppComponent, HelloComponent],
+  bootstrap: [AppComponent],
+  providers: [ExcelService]
 })
 export class AppModule { }
