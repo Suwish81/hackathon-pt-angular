@@ -176,8 +176,8 @@ export class HelloComponent implements OnInit {
 
   notification (message :string){
     this._notifications.create('Message', "Data saved sucessfully",NotificationType.Success, {		
-			timeOut: 5000,
-			showProgressBar: true,
+			timeOut: 2000,
+			showProgressBar: false,
 			pauseOnHover: true,
 			clickToClose: true,
 			animate: 'fromRight'
