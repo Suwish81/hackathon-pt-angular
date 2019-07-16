@@ -7,6 +7,7 @@ import { ItemPrice } from './itemPrice';
 import {ExcelService} from './excel.service';
 import * as XLSX from 'xlsx';
 import { NotificationsService,NotificationType } from 'angular2-notifications';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
 @Component({
   selector: 'hello',
@@ -31,7 +32,8 @@ export class HelloComponent implements OnInit {
   
     //this.getItemPriceList();
   }
-  constructor(private http: HttpClient, private _notifications: NotificationsService,private excelService:ExcelService) {
+  constructor(private http: HttpClient, private _notifications: NotificationsService,private excelService:ExcelService,
+   private spinnerService: Ng4LoadingSpinnerService) {
     this.home();
   }
 
@@ -79,7 +81,9 @@ export class HelloComponent implements OnInit {
     return data.split(",");
   }
   home(){
+     this.spinnerService.show();
     this.configsession=false;
+    this.pricesession=false;
      this.addnewval = false;
     this.getItemList();
   }
@@ -93,6 +97,7 @@ export class HelloComponent implements OnInit {
     
   }
   loadPriceList(df){
+  
     this.selVal=df;
     this.getItem();
     this.getItemPriceList();
@@ -121,9 +126,11 @@ export class HelloComponent implements OnInit {
   }
 
   getItemList() {
+    
     this.http.get(this.baseUrl + '/item').subscribe((res: Item[]) => {
       if (res.length > 0) {
         this.selItemList = res;
+          this.spinnerService.hide();
       }
     });
   }
@@ -145,6 +152,7 @@ export class HelloComponent implements OnInit {
       if (res.length > 0) {
         this.selItemPriceList = res;
         console.log(this.selItemPriceList.length);
+         this.spinnerService.hide();
       }
 
     });
