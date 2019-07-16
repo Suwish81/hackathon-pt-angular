@@ -61,6 +61,12 @@ export class HelloComponent implements OnInit {
 
    }
 
+   show:boolean = false;
+
+  toggleCollapse() {
+    this.show = !this.show
+  }
+
   downloadPriceList() :any{
      this.excelService.exportAsExcelFile(this.selItemPriceList, 'PriceList');
   }
