@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { Item } from './item';
-import { ItemPrice } from './itemPrice'
+import { ItemPrice } from './itemPrice';
+import {ExcelService} from './excel.service';
 
 @Component({
   selector: 'hello',
@@ -28,12 +29,12 @@ export class HelloComponent implements OnInit {
   
     //this.getItemPriceList();
   }
-  constructor(private http: HttpClient) {
-    setTimeout(()=>{
-      this.getItem();
-      this.getItemPriceList();
-    },1000);
-    
+  constructor(private http: HttpClient,private excelService:ExcelService) {
+    this.home();
+  }
+
+  downloadPriceList() :any{
+     this.excelService.exportAsExcelFile(this.selItemPriceList, 'PriceList');
   }
 
   public getUserList(): string[] {

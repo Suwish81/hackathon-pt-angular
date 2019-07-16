@@ -148,8 +148,8 @@
   <br>
   <button (click)="addPriceItem()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-plus pr-2"></i>Add New ItemPrice </button>
   <button (click)="savePriceItem()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-save pr-2"></i>Save ItemPrice </button>
-   <button (click)="savePriceItem()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-upload pr-2"></i>Upload PriceList </button>
-  
+   <button (click)="uploadPriceList()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-upload pr-2"></i>Upload PriceList </button>
+    <button (click)="downloadPriceList()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-download pr-2"></i>download PriceList </button>
   <div class="inner">
 <table class="table table-striped border border-success" >
     
