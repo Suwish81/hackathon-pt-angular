@@ -5,6 +5,7 @@ import { Observable, throwError } from 'rxjs';
 import { Item } from './item';
 import { ItemPrice } from './itemPrice';
 import {ExcelService} from './excel.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'hello',
@@ -32,6 +33,33 @@ export class HelloComponent implements OnInit {
   constructor(private http: HttpClient,private excelService:ExcelService) {
     this.home();
   }
+
+   //
+   onFileChange(env):any{
+     console.log('Uploading');
+    //this.selItemPriceList = this.excelService.getJSONFromExcel(env);
+
+    let workBook = null;
+    let jsonData = null;
+    const reader = new FileReader();
+    const file = env.target.files[0];
+    
+    reader.onload = (event) => {
+      const data = reader.result;
+      workBook = XLSX.read(data, { type: 'binary' });
+      jsonData = workBook.SheetNames.reduce((initial, name) => {
+        const sheet = workBook.Sheets[name];
+        initial[name] = XLSX.utils.sheet_to_json(sheet);
+        return initial;
+      }, {}); 
+      this.selItemPriceList=jsonData.data;
+      console.log( jsonData.data);
+     // document.getElementById('output').innerHTML = dataString.slice(0, 300).concat("...");
+      //this.setDownload(dataString);
+    }
+    reader.readAsBinaryString(file);
+
+   }
 
   downloadPriceList() :any{
      this.excelService.exportAsExcelFile(this.selItemPriceList, 'PriceList');

@@ -53,7 +53,7 @@
   <h4><i class="fa fa-cog pr-2"></i>Item Configuration - {{selItem.name}}</h4><br>
   <button (click)="addParam()" class="btn btn-outline-primary " type="button"  *ngIf="selItem && selItem.paramCount > 0" ><i class="fa fa-plus pr-2"></i>Add Param</button> &nbsp;
   
-  <button (click)="saveItem()" class="btn btn-outline-primary " type="button"  *ngIf="selItem && selItem.paramCount > 0" ><i class="fa fa-save pr-2"></i>Save Item</button><br> <br>
+  <button (click)="saveItem()" class="btn btn-outline-primary " type="button"  *ngIf="selItem && selItem.paramCount > 0" ><i class="fa fa-save pr-2"></i>Save Item</button>
   <h5>Name :</h5> <input  class="form-control"   [(ngModel)]="selItem.name" tye="text" />
   <h5>Description :</h5> <input  class="form-control" [(ngModel)]="selItem.description" tye="text" />
     <br><br>
@@ -144,12 +144,15 @@
 </div>
 <div *ngIf="pricesession">
   <br><br>
-  <h4><i class="fa fa-tags pr-2"></i> Price Settings -  {{selItem.name}}</h4>
+  <h4 *ngIf="selItem "><i class="fa fa-tags pr-2"></i> Price Settings -  {{selItem.name}}</h4>
   <br>
   <button (click)="addPriceItem()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-plus pr-2"></i>Add New ItemPrice </button>
-  <button (click)="savePriceItem()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-save pr-2"></i>Save ItemPrice </button>
-   <button (click)="uploadPriceList()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-upload pr-2"></i>Upload PriceList </button>
-    <button (click)="downloadPriceList()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-download pr-2"></i>download PriceList </button>
+  <button (click)="savePriceItem()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-save pr-2"></i>Save ItemPrice </button>  
+  <div class="file btn btn-outline-primary m-1" *ngIf="selItem" style="position: relative;  overflow: hidden;" >
+    <i class="fa fa-upload pr-2"></i>Upload PriceList 
+    <input type="file" name="file" (change)="onFileChange($event)" style="position: absolute;  font-size: 50px;  opacity: 0;  right: 0;  top: 0;"/>
+	</div>
+  <button (click)="downloadPriceList()" class="btn btn-outline-primary m-1" type="button"  *ngIf="selItem " ><i class="fa fa-download pr-2"></i>download PriceList </button>
   <div class="inner">
 <table class="table table-striped border border-success" >
     
