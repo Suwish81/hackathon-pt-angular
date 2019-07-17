@@ -1,0 +1,1070 @@
+package com.citizens.hackathon.pricingtool;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+
+
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.citizens.hackathon.pricingtool.model.Item;
+import com.citizens.hackathon.pricingtool.model.ItemPrice;
+import com.citizens.hackathon.pricingtool.model.Request;
+
+public class ItemHandler {
+	
+	public static Object handleRequest(Request request, Context context) {
+		LambdaLogger logger = context.getLogger();
+	    logger.log("received : " +request.getHttpMethod() +", method : " + request.getMethod());
+	    
+	    if("ITEM".equals(request.getMethod())){
+	    	return handleItemRequest(request, context);
+	    }else if("ITEM_PRICE".equals(request.getMethod())) {
+	    	return handleItemPriceRequest(request, context);
+	    }
+	    
+	    
+		return null;
+	}
+
+	
+
+	private static Object handleItemRequest(Request request, Context context) {
+		AmazonDynamoDB client = null;  
+	    DynamoDBMapper mapper = null;
+	    
+	    Object retValue =null;
+	   
+	    
+	    if("GET".equalsIgnoreCase(request.getHttpMethod()) && request.getId()!=null) {
+	    	client = AmazonDynamoDBClientBuilder.defaultClient();
+	    	mapper =  new DynamoDBMapper(client);
+	    	retValue = mapper.load(Item.class, request.getId());
+	    	
+	    }else if("GET".equalsIgnoreCase(request.getHttpMethod()) && request.getId()==null) {
+	    	client = AmazonDynamoDBClientBuilder.defaultClient();
+	    	mapper =  new DynamoDBMapper(client);
+	    	retValue = mapper.scan(Item.class, new DynamoDBScanExpression());
+	    	
+	    }
+	    else if("POST".equalsIgnoreCase(request.getHttpMethod()) &&  request.getItem()!=null ) {
+	    	
+	    	client = AmazonDynamoDBClientBuilder.defaultClient();
+	    	mapper =  new DynamoDBMapper(client);
+	    	Item item  = request.getItem();
+	    	if(item.getId()==null) {
+	    		item.setId( String.valueOf(new Date().getTime()));
+	    	}
+	    	 mapper.save(item);
+	    	 retValue ="{\"status\": \" DONE\"}";
+	    	
+	    }
+	    else if("POST".equalsIgnoreCase(request.getHttpMethod()) &&  request.getItems()!=null) {
+	    	
+	    	client = AmazonDynamoDBClientBuilder.defaultClient();
+	    	mapper =  new DynamoDBMapper(client);
+	    	int i=1;
+	    	for(Item item :  request.getItems()) {
+	    		if(item.getId()==null) {
+		    		item.setId( String.valueOf(new Date().getTime())+"_"+i);
+		    		i++;
+		    	}
+	    	}	    	
+	    	
+	    	mapper.batchSave(request.getItems());
+	    	 retValue ="{\"status\": \" DONE\"}";
+	    }
+		
+		return retValue;
+	}
+	
+	private static Object handleItemPriceRequest(Request request, Context context) {
+		AmazonDynamoDB client = null;  
+	    DynamoDBMapper mapper = null;
+	    
+	    Object retValue =null;
+	   
+	    
+	    /*if("GET".equalsIgnoreCase(request.getHttpMethod()) && request.getItemId()!=null) {
+	    	client = AmazonDynamoDBClientBuilder.defaultClient();
+	    	mapper =  new DynamoDBMapper(client);
+	    	retValue = mapper.load(ItemPrice.class, request.getId());
+	    	
+	    }else if("GET".equalsIgnoreCase(request.getHttpMethod()) && request.getId()!=null) {
+	    	client = AmazonDynamoDBClientBuilder.defaultClient();
+	    	mapper =  new DynamoDBMapper(client);
+	    	retValue = mapper.load(ItemPrice.class, request.getId());
+	    	
+	    }else*/ if("GET".equalsIgnoreCase(request.getHttpMethod()) && request.getItemId()!=null) {
+	    	client = AmazonDynamoDBClientBuilder.defaultClient();
+	    	mapper =  new DynamoDBMapper(client);
+	    	DynamoDBScanExpression scanExpression =new DynamoDBScanExpression();
+	    	  scanExpression.addFilterCondition("itemId", 
+	    	            new Condition()
+	    	               .withComparisonOperator(ComparisonOperator.EQ)
+	    	               .withAttributeValueList(new AttributeValue().withS(request.getItemId())));
+	    	retValue = mapper.scan(ItemPrice.class, scanExpression);
+	    	
+	    	 
+	    }
+	    else if("POST".equalsIgnoreCase(request.getHttpMethod()) &&  request.getItemPrices()!=null) {
+	    	
+	    	client = AmazonDynamoDBClientBuilder.defaultClient();
+	    	mapper =  new DynamoDBMapper(client);
+	    	int i=1;
+	    	for(ItemPrice itemPrice :  request.getItemPrices()) {
+	    		if(itemPrice.getId()==null) {
+	    			itemPrice.setId( String.valueOf(new Date().getTime())+"_"+i);
+		    		i++;
+		    	}
+	    	}	    	
+	    	
+	    	mapper.batchSave(request.getItemPrices());
+	    	retValue ="{\"status\": \" DONE\"}";
+	    }
+		
+		return retValue;
+	}
+
+}
+
+package com.citizens.hackathon.pricingtool;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+
+public class ItemParameters {
+	
+	@DynamoDBHashKey
+	private String id;
+	@DynamoDBAttribute
+	private String groupid;
+	
+	private String f1;	
+	@DynamoDBAttribute
+	private String f1Val;
+	
+	@DynamoDBAttribute
+	private String f2;
+	@DynamoDBAttribute
+	private String f2Val;
+
+	@DynamoDBAttribute
+	private String f3;
+	@DynamoDBAttribute
+	private String f3Val;
+
+	@DynamoDBAttribute
+	private String f4;
+	@DynamoDBAttribute
+	private String f4Val;
+
+	@DynamoDBAttribute
+	private String f5;
+	@DynamoDBAttribute
+	private String f5Val;
+
+	@DynamoDBAttribute
+	private String f6;
+	@DynamoDBAttribute
+	private String f6Val;
+
+	@DynamoDBAttribute
+	private String f7;
+	@DynamoDBAttribute
+	private String f7Val;
+
+	@DynamoDBAttribute
+	private String f8;
+	@DynamoDBAttribute
+	private String f8Val;
+
+	@DynamoDBAttribute
+	private String f9;
+	@DynamoDBAttribute
+	private String f9Val;
+
+	@DynamoDBAttribute
+	private String f10;	
+	@DynamoDBAttribute
+	private String f10Val;
+	
+	@DynamoDBAttribute
+	private String f11;	
+	@DynamoDBAttribute
+	private String f11Val;
+	
+	@DynamoDBAttribute
+	private String f12;
+	@DynamoDBAttribute
+	private String f12Val;
+
+	@DynamoDBAttribute
+	private String f13;
+	@DynamoDBAttribute
+	private String f13Val;
+
+	@DynamoDBAttribute
+	private String f14;
+	@DynamoDBAttribute
+	private String f14Val;
+
+	@DynamoDBAttribute
+	private String f15;
+	@DynamoDBAttribute
+	private String f15Val;
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public String getF1() {
+		return f1;
+	}
+	public void setF1(String f1) {
+		this.f1 = f1;
+	}
+	public String getF1Val() {
+		return f1Val;
+	}
+	public void setF1Val(String f1Val) {
+		this.f1Val = f1Val;
+	}
+	public String getF2() {
+		return f2;
+	}
+	public void setF2(String f2) {
+		this.f2 = f2;
+	}
+	public String getF2Val() {
+		return f2Val;
+	}
+	public void setF2Val(String f2Val) {
+		this.f2Val = f2Val;
+	}
+	public String getF3() {
+		return f3;
+	}
+	public void setF3(String f3) {
+		this.f3 = f3;
+	}
+	public String getF3Val() {
+		return f3Val;
+	}
+	public void setF3Val(String f3Val) {
+		this.f3Val = f3Val;
+	}
+	public String getF4() {
+		return f4;
+	}
+	public void setF4(String f4) {
+		this.f4 = f4;
+	}
+	public String getF4Val() {
+		return f4Val;
+	}
+	public void setF4Val(String f4Val) {
+		this.f4Val = f4Val;
+	}
+	public String getF5() {
+		return f5;
+	}
+	public void setF5(String f5) {
+		this.f5 = f5;
+	}
+	public String getF5Val() {
+		return f5Val;
+	}
+	public void setF5Val(String f5Val) {
+		this.f5Val = f5Val;
+	}
+	public String getF6() {
+		return f6;
+	}
+	public void setF6(String f6) {
+		this.f6 = f6;
+	}
+	public String getF6Val() {
+		return f6Val;
+	}
+	public void setF6Val(String f6Val) {
+		this.f6Val = f6Val;
+	}
+	public String getF7() {
+		return f7;
+	}
+	public void setF7(String f7) {
+		this.f7 = f7;
+	}
+	public String getF7Val() {
+		return f7Val;
+	}
+	public void setF7Val(String f7Val) {
+		this.f7Val = f7Val;
+	}
+	public String getF8() {
+		return f8;
+	}
+	public void setF8(String f8) {
+		this.f8 = f8;
+	}
+	public String getF8Val() {
+		return f8Val;
+	}
+	public void setF8Val(String f8Val) {
+		this.f8Val = f8Val;
+	}
+	public String getF9() {
+		return f9;
+	}
+	public void setF9(String f9) {
+		this.f9 = f9;
+	}
+	public String getF9Val() {
+		return f9Val;
+	}
+	public void setF9Val(String f9Val) {
+		this.f9Val = f9Val;
+	}
+	public String getF10() {
+		return f10;
+	}
+	public void setF10(String f10) {
+		this.f10 = f10;
+	}
+	public String getF10Val() {
+		return f10Val;
+	}
+	public void setF10Val(String f10Val) {
+		this.f10Val = f10Val;
+	}
+	public String getF11() {
+		return f11;
+	}
+	public void setF11(String f11) {
+		this.f11 = f11;
+	}
+	public String getF11Val() {
+		return f11Val;
+	}
+	public void setF11Val(String f11Val) {
+		this.f11Val = f11Val;
+	}
+	public String getF12() {
+		return f12;
+	}
+	public void setF12(String f12) {
+		this.f12 = f12;
+	}
+	public String getF12Val() {
+		return f12Val;
+	}
+	public void setF12Val(String f12Val) {
+		this.f12Val = f12Val;
+	}
+	public String getF13() {
+		return f13;
+	}
+	public void setF13(String f13) {
+		this.f13 = f13;
+	}
+	public String getF13Val() {
+		return f13Val;
+	}
+	public void setF13Val(String f13Val) {
+		this.f13Val = f13Val;
+	}
+	public String getF14() {
+		return f14;
+	}
+	public void setF14(String f14) {
+		this.f14 = f14;
+	}
+	public String getF14Val() {
+		return f14Val;
+	}
+	public void setF14Val(String f14Val) {
+		this.f14Val = f14Val;
+	}
+	public String getF15() {
+		return f15;
+	}
+	public void setF15(String f15) {
+		this.f15 = f15;
+	}
+	public String getF15Val() {
+		return f15Val;
+	}
+	public void setF15Val(String f15Val) {
+		this.f15Val = f15Val;
+	}
+
+}
+package com.citizens.hackathon.pricingtool.model;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+
+@DynamoDBTable(tableName="Items")
+public class Item {
+	@DynamoDBHashKey
+	private String id;
+	
+	@DynamoDBAttribute
+	private String name;
+	
+	@DynamoDBAttribute
+	private String f1;	
+	@DynamoDBAttribute
+	private String f1Val;
+	
+	@DynamoDBAttribute
+	private String f2;
+	@DynamoDBAttribute
+	private String f2Val;
+
+	@DynamoDBAttribute
+	private String f3;
+	@DynamoDBAttribute
+	private String f3Val;
+
+	@DynamoDBAttribute
+	private String f4;
+	@DynamoDBAttribute
+	private String f4Val;
+
+	@DynamoDBAttribute
+	private String f5;
+	@DynamoDBAttribute
+	private String f5Val;
+
+	@DynamoDBAttribute
+	private String f6;
+	@DynamoDBAttribute
+	private String f6Val;
+
+	@DynamoDBAttribute
+	private String f7;
+	@DynamoDBAttribute
+	private String f7Val;
+
+	@DynamoDBAttribute
+	private String f8;
+	@DynamoDBAttribute
+	private String f8Val;
+
+	@DynamoDBAttribute
+	private String f9;
+	@DynamoDBAttribute
+	private String f9Val;
+
+	@DynamoDBAttribute
+	private String f10;	
+	@DynamoDBAttribute
+	private String f10Val;
+	
+	@DynamoDBAttribute
+	private String f11;	
+	@DynamoDBAttribute
+	private String f11Val;
+	
+	@DynamoDBAttribute
+	private String f12;
+	@DynamoDBAttribute
+	private String f12Val;
+
+	@DynamoDBAttribute
+	private String f13;
+	@DynamoDBAttribute
+	private String f13Val;
+
+	@DynamoDBAttribute
+	private String f14;
+	@DynamoDBAttribute
+	private String f14Val;
+
+	@DynamoDBAttribute
+	private String f15;
+	@DynamoDBAttribute
+	private String f15Val;
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getF1() {
+		return f1;
+	}
+	public void setF1(String f1) {
+		this.f1 = f1;
+	}
+	public String getF1Val() {
+		return f1Val;
+	}
+	public void setF1Val(String f1Val) {
+		this.f1Val = f1Val;
+	}
+	public String getF2() {
+		return f2;
+	}
+	public void setF2(String f2) {
+		this.f2 = f2;
+	}
+	public String getF2Val() {
+		return f2Val;
+	}
+	public void setF2Val(String f2Val) {
+		this.f2Val = f2Val;
+	}
+	public String getF3() {
+		return f3;
+	}
+	public void setF3(String f3) {
+		this.f3 = f3;
+	}
+	public String getF3Val() {
+		return f3Val;
+	}
+	public void setF3Val(String f3Val) {
+		this.f3Val = f3Val;
+	}
+	public String getF4() {
+		return f4;
+	}
+	public void setF4(String f4) {
+		this.f4 = f4;
+	}
+	public String getF4Val() {
+		return f4Val;
+	}
+	public void setF4Val(String f4Val) {
+		this.f4Val = f4Val;
+	}
+	public String getF5() {
+		return f5;
+	}
+	public void setF5(String f5) {
+		this.f5 = f5;
+	}
+	public String getF5Val() {
+		return f5Val;
+	}
+	public void setF5Val(String f5Val) {
+		this.f5Val = f5Val;
+	}
+	public String getF6() {
+		return f6;
+	}
+	public void setF6(String f6) {
+		this.f6 = f6;
+	}
+	public String getF6Val() {
+		return f6Val;
+	}
+	public void setF6Val(String f6Val) {
+		this.f6Val = f6Val;
+	}
+	public String getF7() {
+		return f7;
+	}
+	public void setF7(String f7) {
+		this.f7 = f7;
+	}
+	public String getF7Val() {
+		return f7Val;
+	}
+	public void setF7Val(String f7Val) {
+		this.f7Val = f7Val;
+	}
+	public String getF8() {
+		return f8;
+	}
+	public void setF8(String f8) {
+		this.f8 = f8;
+	}
+	public String getF8Val() {
+		return f8Val;
+	}
+	public void setF8Val(String f8Val) {
+		this.f8Val = f8Val;
+	}
+	public String getF9() {
+		return f9;
+	}
+	public void setF9(String f9) {
+		this.f9 = f9;
+	}
+	public String getF9Val() {
+		return f9Val;
+	}
+	public void setF9Val(String f9Val) {
+		this.f9Val = f9Val;
+	}
+	public String getF10() {
+		return f10;
+	}
+	public void setF10(String f10) {
+		this.f10 = f10;
+	}
+	public String getF10Val() {
+		return f10Val;
+	}
+	public void setF10Val(String f10Val) {
+		this.f10Val = f10Val;
+	}
+	public String getF11() {
+		return f11;
+	}
+	public void setF11(String f11) {
+		this.f11 = f11;
+	}
+	public String getF11Val() {
+		return f11Val;
+	}
+	public void setF11Val(String f11Val) {
+		this.f11Val = f11Val;
+	}
+	public String getF12() {
+		return f12;
+	}
+	public void setF12(String f12) {
+		this.f12 = f12;
+	}
+	public String getF12Val() {
+		return f12Val;
+	}
+	public void setF12Val(String f12Val) {
+		this.f12Val = f12Val;
+	}
+	public String getF13() {
+		return f13;
+	}
+	public void setF13(String f13) {
+		this.f13 = f13;
+	}
+	public String getF13Val() {
+		return f13Val;
+	}
+	public void setF13Val(String f13Val) {
+		this.f13Val = f13Val;
+	}
+	public String getF14() {
+		return f14;
+	}
+	public void setF14(String f14) {
+		this.f14 = f14;
+	}
+	public String getF14Val() {
+		return f14Val;
+	}
+	public void setF14Val(String f14Val) {
+		this.f14Val = f14Val;
+	}
+	public String getF15() {
+		return f15;
+	}
+	public void setF15(String f15) {
+		this.f15 = f15;
+	}
+	public String getF15Val() {
+		return f15Val;
+	}
+	public void setF15Val(String f15Val) {
+		this.f15Val = f15Val;
+	}
+	
+}
+package com.citizens.hackathon.pricingtool.model;
+
+import java.math.BigDecimal;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+
+@DynamoDBTable(tableName="ItemPrices")
+public class ItemPrice {
+	
+	@DynamoDBHashKey
+	private String id;
+	
+	
+	@DynamoDBAttribute
+	private String itemId;
+	
+	@DynamoDBAttribute
+	private String val1;
+	
+	@DynamoDBAttribute
+	private String val2;
+	
+	@DynamoDBAttribute
+	private String val3;
+	
+	@DynamoDBAttribute
+	private String val4;
+	
+	@DynamoDBAttribute
+	private String val5;
+	
+	@DynamoDBAttribute
+	private String val6;
+	
+	@DynamoDBAttribute
+	private String val7;
+	
+	@DynamoDBAttribute
+	private String val8;
+	
+	@DynamoDBAttribute
+	private String val9;
+	
+	@DynamoDBAttribute
+	private String val10;
+	
+	@DynamoDBAttribute
+	private String val11;
+	
+	@DynamoDBAttribute
+	private String val12;
+	
+	@DynamoDBAttribute
+	private String val13;
+	
+	@DynamoDBAttribute
+	private String val14;
+	
+	@DynamoDBAttribute
+	private String val15;
+	
+	
+	@DynamoDBAttribute
+	private BigDecimal basePoint;
+
+
+	public String getId() {
+		return id;
+	}
+
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+
+	public String getItemId() {
+		return itemId;
+	}
+
+
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
+	}
+
+
+	public String getVal1() {
+		return val1;
+	}
+
+
+	public void setVal1(String val1) {
+		this.val1 = val1;
+	}
+
+
+	public String getVal2() {
+		return val2;
+	}
+
+
+	public void setVal2(String val2) {
+		this.val2 = val2;
+	}
+
+
+	public String getVal3() {
+		return val3;
+	}
+
+
+	public void setVal3(String val3) {
+		this.val3 = val3;
+	}
+
+
+	public String getVal4() {
+		return val4;
+	}
+
+
+	public void setVal4(String val4) {
+		this.val4 = val4;
+	}
+
+
+	public String getVal5() {
+		return val5;
+	}
+
+
+	public void setVal5(String val5) {
+		this.val5 = val5;
+	}
+
+
+	public String getVal6() {
+		return val6;
+	}
+
+
+	public void setVal6(String val6) {
+		this.val6 = val6;
+	}
+
+
+	public String getVal7() {
+		return val7;
+	}
+
+
+	public void setVal7(String val7) {
+		this.val7 = val7;
+	}
+
+
+	public String getVal8() {
+		return val8;
+	}
+
+
+	public void setVal8(String val8) {
+		this.val8 = val8;
+	}
+
+
+	public String getVal9() {
+		return val9;
+	}
+
+
+	public void setVal9(String val9) {
+		this.val9 = val9;
+	}
+
+
+	public String getVal10() {
+		return val10;
+	}
+
+
+	public void setVal10(String val10) {
+		this.val10 = val10;
+	}
+
+
+	public String getVal11() {
+		return val11;
+	}
+
+
+	public void setVal11(String val11) {
+		this.val11 = val11;
+	}
+
+
+	public String getVal12() {
+		return val12;
+	}
+
+
+	public void setVal12(String val12) {
+		this.val12 = val12;
+	}
+
+
+	public String getVal13() {
+		return val13;
+	}
+
+
+	public void setVal13(String val13) {
+		this.val13 = val13;
+	}
+
+
+	public String getVal14() {
+		return val14;
+	}
+
+
+	public void setVal14(String val14) {
+		this.val14 = val14;
+	}
+
+
+	public String getVal15() {
+		return val15;
+	}
+
+
+	public void setVal15(String val15) {
+		this.val15 = val15;
+	}
+
+
+	public BigDecimal getBasePoint() {
+		return basePoint;
+	}
+
+
+	public void setBasePoint(BigDecimal basePoint) {
+		this.basePoint = basePoint;
+	}
+	
+	
+
+}
+package com.citizens.hackathon.pricingtool.model;
+
+import java.util.List;
+
+public class Request {
+	
+	private String httpMethod;
+	
+	private String method;
+	
+	private String id;
+	
+	private String itemId;
+	
+	private Item item;
+	
+	private List<Item> items;
+	
+	private List<ItemPrice> itemPrices;
+	
+
+	public String getHttpMethod() {
+		return httpMethod;
+	}
+
+	public void setHttpMethod(String httpMethod) {
+		this.httpMethod = httpMethod;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public Item getItem() {
+		return item;
+	}
+
+	public void setItem(Item item) {
+		this.item = item;
+	}
+
+	public List<Item> getItems() {
+		return items;
+	}
+
+	public void setItems(List<Item> items) {
+		this.items = items;
+	}
+
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
+	}
+
+	public String getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
+	}
+
+	public List<ItemPrice> getItemPrices() {
+		return itemPrices;
+	}
+
+	public void setItemPrices(List<ItemPrice> itemPrices) {
+		this.itemPrices = itemPrices;
+	}
+	
+	
+	
+
+}
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.citizens.hackathon.pricingtool</groupId>
+  <artifactId>pricing-tool</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0</version>
+  <name>pricingtool-lamda</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-lambda-java-core</artifactId>
+      <version>1.2.0</version>
+    </dependency>
+     <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-dynamodb</artifactId>
+            <version>1.11.587</version>
+        </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.1</version>
+        <configuration>
+           <createDependencyReducedPom>false</createDependencyReducedPom>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+
